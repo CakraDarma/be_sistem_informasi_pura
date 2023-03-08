@@ -29,7 +29,6 @@ const createProduct = async (req, res) => {
 	try {
 		const result = await schema.validateAsync(req.body);
 		const { name, price } = result;
-		console.log(result);
 		const product = await prisma.product.create({
 			data: {
 				name: name,
@@ -43,8 +42,9 @@ const createProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-	const { name, price } = req.body;
 	try {
+		const result = await schema.validateAsync(req.body);
+		const { name, price } = result;
 		const product = await prisma.product.update({
 			where: {
 				id: Number(req.params.id),
