@@ -10,6 +10,7 @@ const app = express();
 // const imagesRouter = require('./app/api/v1/images/router');
 const authCMSRouter = require('./app/api/v1/auth/router');
 const productRoute = require('./app/api/v1/products/router');
+const rolesRoute = require('./app/api/v1/roles/router');
 
 const v1 = '/api/v1';
 
@@ -24,12 +25,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
 	res.status(200).json({
-		message: 'Welcome to Cakras API',
+		message: 'welcome to api pura',
 	});
 });
 
 // app.use(`${v1}/cms`, imagesRouter);
 app.use(`${v1}/cms`, authCMSRouter);
+app.use(`${v1}/cms`, rolesRoute);
 app.use(productRoute);
 
 app.use(notFoundMiddleware);

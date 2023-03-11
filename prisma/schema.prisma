@@ -18,50 +18,50 @@ model Product {
 }
 
 model Banten {
-  id     String  @id @default(uuid())
+  id     Int     @id @default(autoincrement())
   nama   String?
   jumlah Int?
 }
 
 model Desa {
-  id          String    @id @default(uuid())
+  id          Int       @id @default(autoincrement())
   nama        String?
-  kecamatanId String
+  kecamatanId Int
   kecamatan   Kecamatan @relation("KecamatanDesa", fields: [kecamatanId], references: [id])
   pura        Pura[]    @relation("DesaPura")
 }
 
 model Kecamatan {
-  id          String    @id @default(uuid())
-  kabupatenId String
+  id          Int       @id @default(autoincrement())
+  kabupatenId Int
   nama        String
   desa        Desa[]    @relation("KecamatanDesa")
   kabupaten   Kabupaten @relation("KabupatenKecamatan", fields: [kabupatenId], references: [id])
 }
 
 model Kabupaten {
-  id         String      @id @default(uuid())
-  provinsiId String
+  id         Int         @id @default(autoincrement())
+  provinsiId Int
   nama       String
   kecamatan  Kecamatan[] @relation("KabupatenKecamatan")
   provinsi   Provinsi    @relation("ProvinsiKabupaten", fields: [provinsiId], references: [id])
 }
 
 model Provinsi {
-  id        String      @id @default(uuid())
+  id        Int         @id @default(autoincrement())
   nama      String
   kabupaten Kabupaten[] @relation("ProvinsiKabupaten")
 }
 
 model Role {
-  id   String @id @default(uuid())
+  id   Int    @id @default(autoincrement())
   nama String
   user User[] @relation("RoleUser")
 }
 
 model User {
-  id          String               @id @default(uuid())
-  roleId      String
+  id          Int                  @id @default(autoincrement())
+  roleId      Int
   role        Role                 @relation("RoleUser", fields: [roleId], references: [id])
   email       String               @unique
   password    String
@@ -80,10 +80,10 @@ model User {
 }
 
 model Pura {
-  id            String        @id @default(uuid())
-  desaId        String
+  id            Int           @id @default(autoincrement())
+  desaId        Int
   desa          Desa          @relation("DesaPura", fields: [desaId], references: [id])
-  userId        String
+  userId        Int
   user          User          @relation("UserPura", fields: [userId], references: [id])
   nama          String
   kategori      String
@@ -105,10 +105,10 @@ model Pura {
 }
 
 model Upacara {
-  id               String   @id @default(uuid())
-  puraId           String
+  id               Int      @id @default(autoincrement())
+  puraId           Int
   pura             Pura     @relation("PuraUpacara", fields: [puraId], references: [id])
-  userId           String
+  userId           Int
   user             User     @relation("UserUpacara", fields: [userId], references: [id])
   nama             String
   tanggal_mulai    DateTime
@@ -119,10 +119,10 @@ model Upacara {
 }
 
 model Kegiatan {
-  id               String   @id @default(uuid())
-  userId           String
+  id               Int      @id @default(autoincrement())
+  userId           Int
   user             User     @relation("UserKegiatan", fields: [userId], references: [id])
-  puraId           String
+  puraId           Int
   pura             Pura     @relation("PuraKegiatan", fields: [puraId], references: [id])
   nama             String
   keterangan       String
@@ -131,18 +131,18 @@ model Kegiatan {
 }
 
 model Peninggalan {
-  id     String @id @default(uuid())
-  puraId String
-  pura   Pura   @relation("PuraPeninggalan", fields: [puraId], references: [id])
-  userId String
-  user   User   @relation("UserPeninggalan", fields: [userId], references: [id])
+  id     Int  @id @default(autoincrement())
+  puraId Int
+  pura   Pura @relation("PuraPeninggalan", fields: [puraId], references: [id])
+  userId Int
+  user   User @relation("UserPeninggalan", fields: [userId], references: [id])
 }
 
 model Pelinggih {
-  id            String   @id @default(uuid())
-  puraId        String
+  id            Int      @id @default(autoincrement())
+  puraId        Int
   pura          Pura     @relation("PuraPelinggih", fields: [puraId], references: [id])
-  userId        String
+  userId        Int
   user          User     @relation("UserPelinggih", fields: [userId], references: [id])
   nama          String
   fungsi        String
@@ -153,8 +153,8 @@ model Pelinggih {
 }
 
 model Pengurus {
-  id          String   @id @default(uuid())
-  puraId      String
+  id          Int      @id @default(autoincrement())
+  puraId      Int
   pura        Pura     @relation("PuraPengurus", fields: [puraId], references: [id])
   nama        String
   jabatan     String
@@ -166,9 +166,9 @@ model Pengurus {
 }
 
 model User_refresh_token {
-  id           String   @id @default(uuid())
+  id           Int      @id @default(autoincrement())
   refreshToken String
-  userId       String
+  userId       Int
   user         User     @relation("UserToken", fields: [userId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @default(now())

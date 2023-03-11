@@ -18,12 +18,12 @@ const signup = async (req) => {
 	// jika email dan status tidak aktif
 	let result = await prisma.user.findFirst({
 		where: {
-			AND: [{ email }, { status: 'tidak aktif' }],
+			AND: [{ email }],
 		},
 	});
 
 	// kalau ada user tapi blm aktif update
-	if (result) {
+	if (result && result.status == 'tidak aktif') {
 		result = await prisma.user.update({
 			where: {
 				email: result.email,
@@ -37,8 +37,9 @@ const signup = async (req) => {
 				otp: Math.floor(Math.random() * 9999),
 			},
 		});
-	} else {
-		// kalau tidak buat saja baru
+	} else if (result == null) {
+		// kalau tidak ada dan belum aktif buat saja baru
+
 		result = await prisma.user.create({
 			data: {
 				nama,
@@ -49,12 +50,14 @@ const signup = async (req) => {
 				otp: Math.floor(Math.random() * 9999),
 			},
 		});
+	} else if (result && result.status == 'aktif') {
+		return 'Email Sudah terdaftar';
 	}
-	await otpMail(email, result);
-
+	// await otpMail(email, result);
 	delete result.id;
 	delete result.password;
 	delete result.roleId;
+	delete result.otp;
 	return result;
 };
 
@@ -69,7 +72,11 @@ const signin = async (req) => {
 		where: {
 			email: email,
 		},
+		include: {
+			role: true,
+		},
 	});
+	console.log(result);
 
 	if (!result) {
 		throw new UnauthorizedError('Invalid Credentials');
