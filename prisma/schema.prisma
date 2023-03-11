@@ -60,23 +60,23 @@ model Role {
 }
 
 model User {
-  id          String             @id @default(uuid())
+  id          String               @id @default(uuid())
   roleId      String
-  role        Role               @relation("RoleUser", fields: [roleId], references: [id])
-  email       String             @unique
+  role        Role                 @relation("RoleUser", fields: [roleId], references: [id])
+  email       String               @unique
   password    String
   nama        String
   telepon     String
   otp         Int
-  status      String             @default("tidak aktif")
-  createdAt   DateTime           @default(now())
-  updateAt    DateTime           @default(now())
-  pura        Pura[]             @relation("UserPura")
-  upacara     Upacara[]          @relation("UserUpacara")
-  kegiatan    Kegiatan[]         @relation("UserKegiatan")
-  peninggalan Peninggalan[]      @relation("UserPeninggalan")
-  pelinggih   Pelinggih[]        @relation("UserPelinggih")
-  userToken   UserRefreshToken[] @relation("UserToken")
+  status      String               @default("tidak aktif")
+  createdAt   DateTime             @default(now())
+  updateAt    DateTime             @default(now())
+  pura        Pura[]               @relation("UserPura")
+  upacara     Upacara[]            @relation("UserUpacara")
+  kegiatan    Kegiatan[]           @relation("UserKegiatan")
+  peninggalan Peninggalan[]        @relation("UserPeninggalan")
+  pelinggih   Pelinggih[]          @relation("UserPelinggih")
+  userToken   User_refresh_token[] @relation("UserToken")
 }
 
 model Pura {
@@ -165,7 +165,7 @@ model Pengurus {
   kode_foto   String
 }
 
-model UserRefreshToken {
+model User_refresh_token {
   id           String   @id @default(uuid())
   refreshToken String
   userId       String

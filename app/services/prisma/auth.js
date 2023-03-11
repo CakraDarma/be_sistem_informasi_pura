@@ -22,10 +22,8 @@ const signup = async (req) => {
 		},
 	});
 
-	console.log(result);
-
+	// kalau ada user tapi blm aktif update
 	if (result) {
-		console.log('tidak aktif');
 		result = await prisma.user.update({
 			where: {
 				email: result.email,
@@ -40,6 +38,7 @@ const signup = async (req) => {
 			},
 		});
 	} else {
+		// kalau tidak buat saja baru
 		result = await prisma.user.create({
 			data: {
 				nama,
@@ -88,10 +87,11 @@ const signin = async (req) => {
 	const token = createJWT({ payload: createTokenUser(result) });
 
 	const refreshToken = createRefreshJWT({ payload: createTokenUser(result) });
-	// await createUserRefreshToken({
-	// 	refreshToken,
-	// 	user: result._id,
-	// });
+
+	await createUserRefreshToken({
+		refreshToken,
+		userId: result.id,
+	});
 
 	return { token, refreshToken, role: result.role, email: result.email };
 };
