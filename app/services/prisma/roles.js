@@ -3,25 +3,11 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { NotFoundError, BadRequestError } = require('../../errors');
 
-// const getAllRoles = async (req) => {
-// 	const { keyword } = req.query;
+const getAllRoles = async (req) => {
+	const result = await prisma.role.findMany();
 
-// 	let condition = { organizer: req.user.organizer };
-
-// 	if (keyword) {
-// 		condition = { ...condition, name: { $regex: keyword, $options: 'i' } };
-// 	}
-
-// 	const result = await Roles.find(condition)
-// 		// seperti join, refrensi dari image, dan nampilin id,name,role,image
-// 		.populate({
-// 			path: 'image',
-// 			select: '_id name',
-// 		})
-// 		.select('_id name role image');
-
-// 	return result;
-// };
+	return result;
+};
 
 const createRoles = async (req) => {
 	const { nama } = req.body;
@@ -32,7 +18,7 @@ const createRoles = async (req) => {
 		},
 	});
 
-	if (check) throw new BadRequestError('pembicara sudah terdaftar');
+	if (check) throw new BadRequestError('role sudah terdaftar');
 
 	const result = await prisma.role.create({
 		data: {
@@ -43,86 +29,83 @@ const createRoles = async (req) => {
 	return result;
 };
 
-// const getOneRoles = async (req) => {
-// 	const { id } = req.params;
+const getOneRoles = async (req) => {
+	const { id } = req.params;
 
-// 	const result = await Roles.findOne({
-// 		_id: id,
-// 		organizer: req.user.organizer,
-// 	})
-// 		// .populate('image') nampilin semuanya termasuk image juga
-// 		.populate({
-// 			path: 'image',
-// 			select: '_id name',
-// 		})
-// 		.select('_id name role image');
+	const result = await prisma.role.findUnique({
+		where: {
+			id: Number(id),
+		},
+	});
 
-// 	if (!result)
-// 		throw new NotFoundError(`Tidak ada pembicara dengan id :  ${id}`);
+	if (!result) throw new NotFoundError(`Tidak ada role dengan id :  ${id}`);
 
-// 	return result;
-// };
+	return result;
+};
 
-// const updateRoles = async (req) => {
-// 	const { id } = req.params;
-// 	const { name, image, role } = req.body;
+const updateRoles = async (req) => {
+	const { id } = req.params;
+	const { nama } = req.body;
 
-// 	// cari image dengan field image
-// 	await checkingImage(image);
+	const check = await prisma.role.findFirst({
+		where: {
+			AND: [{ nama }],
+		},
+	});
 
-// 	// cari talents dengan field name dan id selain dari yang dikirim dari params
-// 	const check = await Roles.findOne({
-// 		name,
-// 		organizer: req.user.organizer,
-// 		_id: { $ne: id },
-// 	});
+	if (check) throw new BadRequestError('nama role duplikat');
 
-// 	// apa bila check true / data talents sudah ada maka kita tampilkan error bad request dengan message pembicara sudah terdaftar
-// 	if (check) throw new BadRequestError('pembicara sudah terdaftar');
+	const result = await prisma.role.update({
+		where: {
+			id: Number(req.params.id),
+		},
+		data: {
+			nama,
+		},
+	});
 
-// 	const result = await Roles.findOneAndUpdate(
-// 		{ _id: id },
-// 		{ name, image, role, organizer: req.user.organizer },
-// 		{ new: true, runValidators: true }
-// 	);
+	if (!result) throw new NotFoundError(`Tidak ada role dengan id :  ${id}`);
 
-// 	// jika id result false / null maka akan menampilkan error `Tidak ada pembicara dengan id` yang dikirim client
-// 	if (!result)
-// 		throw new NotFoundError(`Tidak ada pembicara dengan id :  ${id}`);
+	return result;
+};
 
-// 	return result;
-// };
+const deleteRoles = async (req) => {
+	const { id } = req.params;
 
-// const deleteRoles = async (req) => {
-// 	const { id } = req.params;
+	const check = await prisma.role.findFirst({
+		where: {
+			AND: [{ id: Number(id) }],
+		},
+	});
+	if (!check) throw new NotFoundError(`Tidak ada role dengan id :  ${id}`);
 
-// 	const result = await Roles.findOne({
-// 		_id: id,
-// 		organizer: req.user.organizer,
-// 	});
+	const result = prisma.role.delete({
+		where: {
+			id: Number(req.params.id),
+		},
+	});
 
-// 	if (!result)
-// 		throw new NotFoundError(`Tidak ada pembicara dengan id :  ${id}`);
+	return result;
+};
 
-// 	await result.remove();
+const checkingRoles = async (id) => {
+	const result = await prisma.role.findUnique({
+		where: {
+			id: Number(req.params.id),
+		},
+	});
 
-// 	return result;
-// };
+	if (!result)
+		throw new NotFoundError(`Tidak ada pembicara dengan id :  ${id}`);
 
-// const checkingRoles = async (id) => {
-// 	const result = await Roles.findOne({ _id: id });
-
-// 	if (!result)
-// 		throw new NotFoundError(`Tidak ada pembicara dengan id :  ${id}`);
-
-// 	return result;
-// };
+	return result;
+};
 
 module.exports = {
 	createRoles,
-	// getAllRoles,
-	// getOneRoles,
-	// updateRoles,
-	// deleteRoles,
-	// checkingRoles,
+	getAllRoles,
+	getOneRoles,
+	updateRoles,
+	deleteRoles,
+	checkingRoles,
 };
