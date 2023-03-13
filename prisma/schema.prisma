@@ -167,7 +167,7 @@ model Pengurus {
 
 model User_refresh_token {
   id           Int      @id @default(autoincrement())
-  refreshToken String
+  refreshToken String   @db.VarChar(255)
   userId       Int
   user         User     @relation("UserToken", fields: [userId], references: [id])
   createdAt    DateTime @default(now())

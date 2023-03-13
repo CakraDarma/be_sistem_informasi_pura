@@ -1,4 +1,9 @@
-const { signin, signup } = require('../../../services/prisma/auth');
+const {
+	signin,
+	signup,
+	active,
+	change,
+} = require('../../../services/prisma/auth');
 
 const { StatusCodes } = require('http-status-codes');
 
@@ -26,4 +31,28 @@ const signupCms = async (req, res, next) => {
 	}
 };
 
-module.exports = { signinCms, signupCms };
+const activeUser = async (req, res, next) => {
+	try {
+		const result = await active(req);
+
+		res.status(StatusCodes.OK).json({
+			data: result,
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+const changePassword = async (req, res, next) => {
+	try {
+		const result = await change(req);
+
+		res.status(StatusCodes.OK).json({
+			data: result,
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
+module.exports = { signinCms, signupCms, activeUser, changePassword };

@@ -31,7 +31,7 @@ const signup = async (req) => {
 			data: {
 				nama,
 				email,
-				roleId,
+				roleId: Number(roleId),
 				telepon,
 				password: await bcrypt.hash(password, 12),
 				otp: Math.floor(Math.random() * 9999),
@@ -44,7 +44,7 @@ const signup = async (req) => {
 			data: {
 				nama,
 				email,
-				roleId,
+				roleId: Number(roleId),
 				telepon,
 				password: await bcrypt.hash(password, 12),
 				otp: Math.floor(Math.random() * 9999),
@@ -76,7 +76,6 @@ const signin = async (req) => {
 			role: true,
 		},
 	});
-	console.log(result);
 
 	if (!result) {
 		throw new UnauthorizedError('Invalid Credentials');
@@ -103,4 +102,65 @@ const signin = async (req) => {
 	return { token, refreshToken, role: result.role, email: result.email };
 };
 
-module.exports = { signin, signup };
+const active = async (req) => {
+	const { otp, email } = req.body;
+	const check = await prisma.user.findFirst({
+		where: {
+			email,
+		},
+	});
+
+	if (!check) throw new NotFoundError('User belum terdaftar');
+	console.log(check.otp);
+	console.log(otp);
+
+	if (check && check.otp !== otp) throw new BadRequestError('Kode otp salah');
+
+	const result = await prisma.user.update({
+		where: {
+			email,
+		},
+		data: {
+			status: 'aktif',
+		},
+	});
+
+	delete result.password;
+
+	return result;
+};
+
+const change = async (req) => {
+	const { currentPassword, newPassword, email } = req.body;
+
+	const check = await prisma.user.findFirst({
+		where: {
+			email,
+		},
+	});
+
+	const isPasswordCorrect = await bcrypt.compare(
+		currentPassword,
+		check.password
+	);
+
+	if (!isPasswordCorrect) {
+		throw new UnauthorizedError('Invalid Credentials');
+	}
+
+	const result = await prisma.user.update({
+		where: {
+			email,
+		},
+		data: {
+			password: await bcrypt.hash(newPassword, 12),
+		},
+	});
+
+	if (!result) throw new NotFoundError(`Tidak dapat merubah password`);
+
+	delete result.password;
+
+	return result;
+};
+module.exports = { signin, signup, active, change };

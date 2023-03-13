@@ -25,9 +25,10 @@ const createUserRefreshToken = async (payload) => {
 
 const getUserRefreshToken = async (req) => {
 	const { refreshToken } = req.params;
-	let result = await prisma.user_refresh_token.findUnique({
+
+	let result = await prisma.user_refresh_token.findFirst({
 		where: {
-			refreshToken,
+			AND: [{ refreshToken }],
 		},
 	});
 

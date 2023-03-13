@@ -11,6 +11,7 @@ const app = express();
 const authCMSRouter = require('./app/api/v1/auth/router');
 const productRoute = require('./app/api/v1/products/router');
 const rolesRoute = require('./app/api/v1/roles/router');
+const userRefreshTokenRoute = require('./app/api/v1/userRefreshToken/router');
 
 const v1 = '/api/v1';
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 // app.use(`${v1}/cms`, imagesRouter);
 app.use(`${v1}/cms`, authCMSRouter);
 app.use(`${v1}/cms`, rolesRoute);
+app.use(`${v1}/cms`, userRefreshTokenRoute);
 app.use(productRoute);
 
 app.use(notFoundMiddleware);
